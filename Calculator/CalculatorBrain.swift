@@ -50,6 +50,32 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("√", sqrt))
     }
     
+    typealias PropertyList = AnyObject
+    
+    var program: PropertyList { //guaranteed to be a PropertyList
+        get {
+//            var returnValue = [String]()
+//            for op in opStack {
+//                returnValue.append(op.description)
+//            }
+//            return returnValue
+            return opStack.map{ $0.description }
+        }
+        set {
+            if let opSymbols = newValue as? [String] {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    } else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+    
     private func evalute(ops: [Op]) -> (result:Double?, remainingOps:[Op]) {
 
         if !ops.isEmpty {
